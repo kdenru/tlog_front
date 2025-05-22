@@ -38,7 +38,6 @@ export default function PublicRoute() {
       .catch(() => {
         setLoading(false)
       })
-    // eslint-disable-next-line
   }, [user, setUser, location, navigate])
 
   if (loading) {
