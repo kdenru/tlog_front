@@ -1,10 +1,16 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useRoundsStore } from '../store/rounds'
+import { useRoundsStore, type Round } from '../store/rounds'
 import { useUserStore } from '../store/user'
 import { Link } from 'react-router-dom'
-import { Button, Card, Typography, Divider } from 'antd'
+import { Button, Card, Typography, Divider, Empty } from 'antd'
 
 const { Title, Text } = Typography
+
+const STATUS_COLORS: Record<string, string> = {
+  'Активен': '#52c41a',
+  'Завершён': '#ff4d4f',
+  'Ещё не начат': '#bfbfbf',
+}
 
 function getRoundStatus(startAt: string, endAt: string) {
   const now = new Date()
@@ -15,13 +21,7 @@ function getRoundStatus(startAt: string, endAt: string) {
   return 'Завершён'
 }
 
-function getStatusColor(status: string) {
-  if (status === 'Активен') return '#52c41a' // зелёный
-  if (status === 'Завершён') return '#ff4d4f' // красный
-  return '#bfbfbf' // серый
-}
-
-function RoundCard({ round }: { round: { id: string, startAt: string, endAt: string } }) {
+function RoundCard({ round }: { round: Round }) {
   const [status, setStatus] = useState(() => getRoundStatus(round.startAt, round.endAt))
 
   useEffect(() => {
@@ -36,7 +36,7 @@ function RoundCard({ round }: { round: { id: string, startAt: string, endAt: str
     return () => clearInterval(interval)
   }, [round.startAt, round.endAt, status])
 
-  const color = getStatusColor(status)
+  const color = STATUS_COLORS[status]
 
   return (
     <Card style={{ marginBottom: 24, border: '1px solid #bbb', borderRadius: 6 }} bodyStyle={{ padding: 16, background: '#fff' }}>
@@ -101,9 +101,13 @@ export default function Rounds() {
           Создать раунд
         </Button>
       )}
-      {rounds.map((round) => (
-        <RoundCard key={round.id} round={round} />
-      ))}
+      {rounds.length === 0 ? (
+        <Empty description="Раундов пока нет" style={{ margin: '48px 0' }} />
+      ) : (
+        rounds.map((round) => (
+          <RoundCard key={round.id} round={round} />
+        ))
+      )}
     </Card>
   )
 } 
