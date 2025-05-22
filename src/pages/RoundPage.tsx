@@ -57,7 +57,7 @@ export default function RoundPage() {
   // Фетчим инфу о раунде и своей статистике
   const fetchRound = useCallback(async () => { 
     setLoading(true)
-    const res = await fetch(`http://localhost:3000/rounds/${id}`, { credentials: 'include' })
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/rounds/${id}`, { credentials: 'include' })
     const data = await res.json()
     setRound(data)
     setMyPoints(data.myPoints || 0)
@@ -109,7 +109,7 @@ export default function RoundPage() {
       e.stopPropagation();
     }
     if (status !== 'active') return
-    const res = await fetch('http://localhost:3000/taps', {
+    const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/taps`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',

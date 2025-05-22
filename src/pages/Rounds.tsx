@@ -65,7 +65,7 @@ export default function Rounds() {
   const [creating, setCreating] = useState(false)
 
   const fetchRounds = useCallback(() => {
-    fetch('http://localhost:3000/rounds', { credentials: 'include' })
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/rounds`, { credentials: 'include' })
       .then(res => res.json())
       .then(data => setRounds(data))
       .catch(() => setRounds([]))
@@ -78,7 +78,7 @@ export default function Rounds() {
   const handleCreateRound = async () => {
     setCreating(true)
     try {
-      await fetch('http://localhost:3000/rounds', {
+      await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/rounds`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

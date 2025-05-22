@@ -21,7 +21,7 @@ export default function PublicRoute() {
     }
     if (checkedRef.current) return
     checkedRef.current = true
-    fetch('http://localhost:3000/me', {
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/me`, {
       credentials: 'include',
     })
       .then(async (res) => {
