@@ -1,21 +1,39 @@
-import { useState } from 'react'
-import { Form, Input, Button, Typography, Card } from 'antd'
-
-const { Title } = Typography
+import { useNavigate } from 'react-router-dom'
+import { Form, Input, Button, Typography, Card, message } from 'antd'
+import { useUserStore } from '../store/user'
 
 export default function Login() {
-  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
+  const setUser = useUserStore((s) => s.setUser)
 
-  const onFinish = () => {
-    setLoading(true)
-    setTimeout(() => setLoading(false), 1000)
+  const onFinish = async (values: { username: string; password: string }) => {
+    try {
+      const res = await fetch('http://localhost:3000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(values),
+      })
+      if (!res.ok) {
+        throw new Error('Неверный логин или пароль')
+      }
+      const data = await res.json()
+      setUser(data)
+      message.success('Успешный вход!')
+      navigate('/')
+    } catch (err: unknown) {
+      const error = err instanceof Error ? err.message : 'Ошибка входа'
+      message.error(error)
+    }
   }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f5f6fa' }}>
       <Card
         style={{ minWidth: 340, maxWidth: 400, width: '100%' }}
-        title={<Title level={3} style={{ textAlign: 'center', marginBottom: 0 }}>Войти</Title>}
+        title={<Typography.Title level={3} style={{ textAlign: 'center', marginBottom: 0 }}>Войти</Typography.Title>}
       >
         <Form
           layout="vertical"
@@ -29,7 +47,7 @@ export default function Login() {
             rules={[{ required: true, message: 'Введите имя пользователя' }]}
             style={{ marginBottom: 28 }}
           >
-            <Input size="large" />
+            <Input size="large" autoComplete="username" />
           </Form.Item>
           <Form.Item
             label={<span style={{ fontWeight: 600 }}>Пароль:</span>}
@@ -37,14 +55,13 @@ export default function Login() {
             rules={[{ required: true, message: 'Введите пароль' }]}
             style={{ marginBottom: 28 }}
           >
-            <Input.Password size="large" />
+            <Input.Password size="large" autoComplete="current-password" />
           </Form.Item>
           <Form.Item style={{ marginBottom: 0 }}>
             <Button
               type="primary"
               htmlType="submit"
               size="large"
-              loading={loading}
               style={{ width: '100%' }}
             >
               Войти
