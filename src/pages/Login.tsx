@@ -8,7 +8,7 @@ export default function Login() {
 
   const onFinish = async (values: { username: string; password: string }) => {
     try {
-      const res = await fetch('http://localhost:3000/login', {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
